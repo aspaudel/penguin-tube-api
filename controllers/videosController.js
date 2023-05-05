@@ -162,8 +162,24 @@ async function getVideo(req, res) {
 async function getServerVideos(req, res) {
   //res.sendFile(path.join(__dirname, "/index.html"));
   let paths = [];
-
+  //console.log("request");
+  const rootPath = path.join(__dirname);
+  const dir = `${rootPath}/../uploads/thumbnails`;
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
   const videoPaths = "./uploads/thumbnails";
+  // await axios
+  //   .get("https://penguin-tube.000webhostapp.com/getThumbnailPaths.php")
+  //   .then((response) => {
+  //     console.log(response);
+  //     if (response.data.response_code === 200) {
+  //       paths = response.data.myArray;
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.error(error);
+  //   });
 
   fs.readdirSync(videoPaths).forEach((file) => {
     paths.push(file);
