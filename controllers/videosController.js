@@ -164,10 +164,12 @@ async function getServerVideos(req, res) {
   let paths = [];
   //console.log("request");
   const rootPath = path.join(__dirname);
-  const dir = `${rootPath}/../uploads/thumbnails`;
+  const dir = `${rootPath}/../uploads`;
+  const dir2 = `${rootPath}/../uploads`;
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
+      fs.mkdirSync(dir2);
     }
     const videoPaths = "./uploads/thumbnails";
     fs.readdirSync(videoPaths).forEach((file) => {
