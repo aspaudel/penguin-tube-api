@@ -165,10 +165,18 @@ async function getServerVideos(req, res) {
   //console.log("request");
   const rootPath = path.join(__dirname);
   const dir = `${rootPath}/../uploads/thumbnails`;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    const videoPaths = "./uploads/thumbnails";
+    fs.readdirSync(videoPaths).forEach((file) => {
+      paths.push(file);
+    });
+  } catch (err) {
+    console.log(err);
   }
-  const videoPaths = "./uploads/thumbnails";
+
   // await axios
   //   .get("https://penguin-tube.000webhostapp.com/getThumbnailPaths.php")
   //   .then((response) => {
@@ -180,10 +188,6 @@ async function getServerVideos(req, res) {
   //   .catch((error) => {
   //     console.error(error);
   //   });
-
-  fs.readdirSync(videoPaths).forEach((file) => {
-    paths.push(file);
-  });
 
   return res.json({ paths });
 }
