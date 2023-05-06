@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "https://penguin-tube.onrender.com",
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
