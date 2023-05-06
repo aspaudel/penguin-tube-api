@@ -169,6 +169,8 @@ async function getServerVideos(req, res) {
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
+    }
+    if (!fs.existsSync(dir2)) {
       fs.mkdirSync(dir2);
     }
     const videoPaths = "./uploads/thumbnails";

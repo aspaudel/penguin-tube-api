@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://penguin-tube.onrender.com/"],
+    origin: "https://penguin-tube.onrender.com",
     credentials: true,
   })
 );
