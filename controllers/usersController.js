@@ -50,7 +50,11 @@ async function login(req, res) {
 
 async function logout(req, res) {
   try {
-    res.clearCookie("Authorization");
+    res.clearCookie("Authorization", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    });
     res.sendStatus(200);
   } catch (err) {
     console.log(err);
