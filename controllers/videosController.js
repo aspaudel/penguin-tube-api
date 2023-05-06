@@ -165,7 +165,7 @@ async function getServerVideos(req, res) {
   //console.log("request");
   const rootPath = path.join(__dirname);
   const dir = `${rootPath}/../uploads`;
-  const dir2 = `${rootPath}/../uploads`;
+  const dir2 = `${rootPath}/../uploads/thumbnails`;
   try {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
@@ -350,74 +350,76 @@ async function masterDeletionAccount(req, res) {
     videoName = videoName + ".mp4";
     videoNames.push(videoName);
   });
-
-  //Delete the userId folder
-  const deleteFolderRecursive = function (
-    directoryPath = `uploads/${req.user._id}`
-  ) {
-    if (fs.existsSync(directoryPath)) {
-      fs.readdirSync(directoryPath).forEach((file, index) => {
-        const curPath = path.join(directoryPath, file);
-        if (fs.lstatSync(curPath).isDirectory()) {
-          // recurse
-          deleteFolderRecursive(curPath);
-        } else {
-          // delete file
-          fs.unlinkSync(curPath, (err) => {
-            if (err) console.log(err);
-          });
-        }
-      });
-      fs.rmdirSync(directoryPath, { recursive: true }, (err) => {
-        if (err) console.log(err);
-      });
-    }
-  };
-  deleteFolderRecursive();
-
-  // Delete all the videonames from MySql
-  videoNames.forEach(async (videoName) => {
-    await axios
-      .post(
-        "https://penguin-tube.000webhostapp.com/deleteVideoEntry.php",
-        videoName
-      )
-      .then((response) => {});
-  });
-
-  // Delete videonames from mongoDB
-  const users = await User.find({});
-  users.forEach(async (user) => {
-    videoNames.forEach(async (videoName) => {
-      await User.findOneAndUpdate(
-        { _id: user._id },
-        { $pull: { likes: videoName } }
-      );
-    });
-  });
-
-  // Delete all the thumbnails
-  paths.forEach((file) => {
-    fs.unlink(`uploads/thumbnails/${file}`, (err) => {
-      if (err) console.log("Video thumbnail delete error");
-    });
-  });
-
-  // Delete the user from mongoDB
-  User.findById(userId)
-    .then((user) => {
-      if (user) {
-        return user.deleteOne();
+  try {
+    //Delete the userId folder
+    const deleteFolderRecursive = function (
+      directoryPath = `uploads/${req.user._id}`
+    ) {
+      if (fs.existsSync(directoryPath)) {
+        fs.readdirSync(directoryPath).forEach((file, index) => {
+          const curPath = path.join(directoryPath, file);
+          if (fs.lstatSync(curPath).isDirectory()) {
+            // recurse
+            deleteFolderRecursive(curPath);
+          } else {
+            // delete file
+            fs.unlinkSync(curPath, (err) => {
+              if (err) console.log(err);
+            });
+          }
+        });
+        fs.rmdirSync(directoryPath, { recursive: true }, (err) => {
+          if (err) console.log(err);
+        });
       }
-      throw new Error("User not found");
-    })
-    .then(() => {
-      console.log("User deleted successfully");
-    })
-    .catch((error) => {
-      console.log(error);
+    };
+    deleteFolderRecursive();
+
+    // Delete all the videonames from MySql
+    videoNames.forEach(async (videoName) => {
+      await axios
+        .post(
+          "https://penguin-tube.000webhostapp.com/deleteVideoEntry.php",
+          videoName
+        )
+        .then((response) => {});
     });
 
+    // Delete videonames from mongoDB
+    const users = await User.find({});
+    users.forEach(async (user) => {
+      videoNames.forEach(async (videoName) => {
+        await User.findOneAndUpdate(
+          { _id: user._id },
+          { $pull: { likes: videoName } }
+        );
+      });
+    });
+
+    // Delete all the thumbnails
+    paths.forEach((file) => {
+      fs.unlink(`uploads/thumbnails/${file}`, (err) => {
+        if (err) console.log("Video thumbnail delete error");
+      });
+    });
+
+    // Delete the user from mongoDB
+    User.findById(userId)
+      .then((user) => {
+        if (user) {
+          return user.deleteOne();
+        }
+        throw new Error("User not found");
+      })
+      .then(() => {
+        console.log("User deleted successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (err) {
+    console.log(err);
+  }
   try {
     res.clearCookie("Authorization");
     return res.sendStatus(200);
