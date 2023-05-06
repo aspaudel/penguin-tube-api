@@ -425,7 +425,11 @@ async function masterDeletionAccount(req, res) {
     console.log(err);
   }
   try {
-    res.clearCookie("Authorization");
+    res.clearCookie("Authorization", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+    });
     return res.sendStatus(200);
   } catch (err) {
     console.log(err);
