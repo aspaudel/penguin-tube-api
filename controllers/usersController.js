@@ -38,8 +38,11 @@ async function login(req, res) {
     res.cookie("Authorization", token, {
       expires: new Date(exp),
       httpOnly: true,
+      sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
+    console.log("Cookie test");
+    console.log(res);
     return res.sendStatus(200);
   } catch (err) {
     console.log(err);
