@@ -31,7 +31,7 @@ app.use("/uploads", express.static("uploads"));
 
 connectToDb();
 
-app.get("/", videosController.getServerVideos);
+app.post("/", videosController.getServerVideos);
 
 app.post("/signup", usersController.signup);
 app.post("/login", usersController.login);

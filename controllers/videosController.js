@@ -164,8 +164,13 @@ async function getVideo(req, res) {
 }
 
 async function getServerVideos(req, res) {
-  //res.sendFile(path.join(__dirname, "/index.html"));
+  let { videoNumber } = req.body;
+  // Boolean variable to know if more videos exist
+  let hasMore = false;
+  // res.sendFile(path.join(__dirname, "/index.html"));
   let paths = [];
+  // Paths to be returned based on the phone number
+  let pagedPaths = [];
   //console.log("request");
   const rootPath = path.join(__dirname);
   const dir = `${rootPath}/../uploads`;
@@ -181,6 +186,28 @@ async function getServerVideos(req, res) {
     fs.readdirSync(videoPaths).forEach((file) => {
       paths.push(file);
     });
+
+    if (videoNumber < paths.length - 1) {
+      hasMore = true;
+    }
+    if (videoNumber === 0) {
+      for (let i = 0; i < 3; i++) {
+        if (i <= paths.length - 1) {
+          pagedPaths.push(paths[i]);
+          videoNumber++;
+        } else {
+          break;
+        }
+      }
+    } else {
+      if (videoNumber <= paths.length - 1) {
+        pagedPaths.push(paths[videoNumber]);
+        videoNumber++;
+      }
+      if (videoNumber === paths.length) {
+        return res.json({ pagedPaths, hasMore, videoNumber, loading: false });
+      }
+    }
   } catch (err) {
     console.log(err);
   }
@@ -197,7 +224,7 @@ async function getServerVideos(req, res) {
   //     console.error(error);
   //   });
 
-  return res.json({ paths });
+  return res.json({ pagedPaths, hasMore, videoNumber, loading: false });
 }
 
 async function renameVideoFile(req, res) {
