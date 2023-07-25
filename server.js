@@ -57,3 +57,5 @@ app.get("/userProfile", requireAuth, videosController.getUserVideos);
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}`);
 });
+
+// Testing git email and name change.
