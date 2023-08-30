@@ -169,7 +169,7 @@ async function getServerVideos(req, res) {
   let hasMore = false;
   // res.sendFile(path.join(__dirname, "/index.html"));
   let paths = [];
-  // Paths to be returned based on the phone number
+  // Paths to be returned based on the page number
   let pagedPaths = [];
   //console.log("request");
   const rootPath = path.join(__dirname);
@@ -187,11 +187,17 @@ async function getServerVideos(req, res) {
       paths.push(file);
     });
 
+    for (let i = 0; i < paths.length / 2; i++) {
+      let a = paths[i];
+      paths[i] = paths[paths.length - i - 1];
+      paths[paths.length - i - 1] = a;
+    }
+
     if (videoNumber < paths.length - 1) {
       hasMore = true;
     }
     if (videoNumber === 0) {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 4; i++) {
         if (i <= paths.length - 1) {
           pagedPaths.push(paths[i]);
           videoNumber++;
